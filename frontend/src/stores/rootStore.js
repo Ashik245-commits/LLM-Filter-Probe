@@ -523,6 +523,12 @@ export const useRootStore = defineStore('root', () => {
       scanState.isScanning = false;
     }
   }
+  function initializeScan(data) {
+    scanState.totalBytes = data.total_length || 0;
+    scanState.progress = 0;
+    scanState.scannedBytes = 0;
+  }
+
   function setScanError(error) {
     scanState.error = error;
     scanState.isScanning = false;
@@ -621,6 +627,7 @@ export const useRootStore = defineStore('root', () => {
     updateScanProgress,
     completeScan,
     cancelScan,
+    initializeScan,
     setScanError,
     getLocationsByKeyword,
     addLog,

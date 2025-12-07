@@ -285,6 +285,29 @@ class ProbeEngine:
 
         return processed_results
 
+    def reset_masking(self):
+        """重置动态掩码，清除所有已知的敏感词模式。"""
+        self.mask_patterns = set()
+        if self.response_analyzer:
+            # 【修复】直接更新属性，而不是调用不存在的方法
+            self.response_analyzer.mask_patterns = self.mask_patterns
+        logger.info(f"[{self.engine_id}] 动态掩码已重置.")
+
+    def reset_masking(self):
+        """重置动态掩码，清除所有已知的敏感词模式。"""
+        self.mask_patterns = set()
+        if self.response_analyzer:
+            self.response_analyzer.mask_patterns = self.mask_patterns
+        logger.info(f"[{self.engine_id}] 动态掩码已重置.")
+
+    def reset_statistics(self):
+        """重置引擎的统计数据，确保每次扫描的计数都是独立的。"""
+        self.request_count = 0
+        self.blocked_count = 0
+        self.safe_count = 0
+        self.error_count = 0
+        logger.info(f"[{self.engine_id}] 引擎统计数据已重置.")
+
     def get_statistics(self) -> Dict[str, int]:
         """获取统计数据"""
         return {

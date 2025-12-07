@@ -100,7 +100,17 @@ class ScanService:
         # 使用最新的、规范化的配置更新 self.preset
         self.preset = Preset(**normalized_config)
 
+        # 【修复】确保 API 凭证在重新加载后被正确设置
+        # 从原始加载的配置中提取 API 凭证，因为 normalized_config 可能不包含它们
+        self.preset.api_url = latest_config.get('api_url')
+        self.preset.api_key = latest_config.get('api_key')
+        self.preset.model = latest_config.get('model') or latest_config.get('api_model')
+
         # 重新初始化引擎和扫描器
+        # 【修复】在重新初始化之前，先将最新的回调设置给已有的 emitter，防止事件丢失
+        if self.scanner and self.scanner.emitter:
+            await self.scanner.emitter.set_callback(event_callback)
+
         # 注意：initialize 方法会使用更新后的 self.preset
         await self.initialize(event_callback=event_callback)
 

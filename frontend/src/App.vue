@@ -136,7 +136,7 @@ const initializeSession = async () => {
           // 根据事件类型调用不同的 store action
           switch (data.event) {
             case 'scan_start':
-              rootStore.updateScanProgress(0, data.data?.total_length || 0);
+              rootStore.initializeScan(data.data || {});
               break;
             case 'progress':
               rootStore.updateScanProgress(data.data || {});

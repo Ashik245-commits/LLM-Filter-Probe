@@ -266,6 +266,17 @@ class TextScanner:
         self.uncleared_chars = len(text)
         self.full_text = text
         self.known_sensitive_words = set()
+
+        # 【修复】重置引擎的统计数据，确保“总请求数”只计算本次扫描
+        if hasattr(self.engine, 'reset_statistics'):
+            self.engine.reset_statistics()
+
+        # 【修复】重置动态掩码，防止跨扫描污染
+        if hasattr(self.engine, 'reset_masking'):
+            self.engine.reset_masking()
+        # 【修复】重置动态掩码，防止跨扫描污染
+        if hasattr(self.engine, 'reset_masking'):
+            self.engine.reset_masking()
         
         try:
             if hasattr(self.engine, "unknown_status_codes"):
@@ -302,6 +313,9 @@ class TextScanner:
             }
         
         await self.emitter.scan_started(self.total_text_length, segment_size, config_for_log)
+
+        # 【修复】强制事件循环切换，确保 'scan_start' 事件能被及时发送到前端
+        await asyncio.sleep(0)
 
         segments = self.segmenter.split(text)
         logger.info(f"[{self.session_id}] 文本已分割成 {len(segments)} 个段进行扫描。")
@@ -343,10 +357,13 @@ class TextScanner:
                 f"已扫描: {end_pos} | 总数: {self.total_text_length} | "
                 f"未清除: {self.uncleared_chars} | 敏感词: {self.sensitive_count}"
             )
+            # 构建当前的分组结果并随进度事件一起发送，确保前端实时更新
+            current_grouped_results = self._build_grouped_results()
             await self.emitter.progress_updated(
                 scanned=end_pos,
                 total=self.total_text_length,
-                sensitive_count=self.sensitive_count
+                sensitive_count=self.sensitive_count,
+                results=current_grouped_results
             )
 
         deduplicated_segments = [

@@ -218,8 +218,14 @@ class ScanEventEmitter:
                 "results": results or {},
             }
         })
-        # 发送扫描完成日志消息
-        await self.log_message("success", f"扫描完成 | 共发现 {total_sensitive_found} 处敏感内容 | 总请求数: {total_requests}")
+        # 计算本次扫描的总记录数（所有敏感词的位置总数）
+        total_records = 0
+        if results:
+            for keyword, locations in results.items():
+                total_records += len(locations) if isinstance(locations, list) else 0
+        
+        # 发送扫描完成日志消息，输出本次扫描的总记录数
+        await self.log_message("success", f"扫描完成 | 共发现 {total_sensitive_found} 处敏感内容 | 本次扫描总请求数: {total_requests}")
 
         if unknown_codes:
             codes_str = ", ".join(map(str, sorted(unknown_codes)))
