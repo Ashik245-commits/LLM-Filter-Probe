@@ -65,6 +65,8 @@ Thumbs.db
 # Docs 
 docs/
 
-config/
+# Config files
+config/API/credentials.json
+config/settings/user.json
 
 
