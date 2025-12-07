@@ -68,5 +68,5 @@ docs/
 # Config files
 config/API/credentials.json
 config/settings/user.json
-
+config/presets/custom.json
 

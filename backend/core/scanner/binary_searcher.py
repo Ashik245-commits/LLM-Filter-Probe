@@ -71,7 +71,7 @@ class BinarySearcher:
         self.processed_signatures: set = set()  # 去重集合
         self.event_bus = get_event_bus()
         
-        # 初始化精确定位扫描器
+        # 初始化精确定位扫描器（改进版）
         self.precision_scanner = PrecisionScanner(session_id=self.session_id)
         
         # 加载算法配置
