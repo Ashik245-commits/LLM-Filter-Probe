@@ -1,0 +1,688 @@
+# 部署和运维指南
+
+## 快速导航
+
+根据你的场景选择合适的部署方式：
+
+| 场景 | 推荐方案 | 耗时 |
+|------|---------|------|
+| **本地开发** | [一键启动脚本](#一键启动脚本推荐) | 2-3 分钟 |
+| **容器部署** | [Docker Compose](#docker-部署) | 3-5 分钟 |
+| **生产环境** | [Nginx + Gunicorn](#生产环境部署) | 15-20 分钟 |
+| **手动配置** | [详细安装步骤](#详细安装步骤) | 10-15 分钟 |
+
+---
+
+## 目录
+
+1. [系统要求](#系统要求)
+2. [一键启动脚本（推荐）](#一键启动脚本推荐)
+3. [详细安装步骤](#详细安装步骤)
+4. [配置说明](#配置说明)
+5. [Docker 部署](#docker-部署)
+6. [生产环境部署](#生产环境部署)
+7. [监控和日志](#监控和日志)
+8. [故障排查](#故障排查)
+
+---
+
+## 系统要求
+
+### 软件版本
+
+| 软件 | 最低版本 | 推荐版本 |
+|------|---------|---------|
+| Python | 3.9 | 3.11+ |
+| Node.js | 16.0 | 18.0+ |
+| npm | 8.0 | 9.0+ |
+| Git | 2.20 | 2.40+ |
+
+### 操作系统
+
+✅ Windows 10 / 11  
+✅ macOS 10.15+  
+✅ Linux (Ubuntu 20.04+)
+
+---
+
+## 一键启动脚本（推荐）
+
+**最简单的启动方式，脚本会自动完成所有配置。**
+
+### 运行脚本
+
+#### Windows
+
+```bash
+# 方式 1：直接双击
+# 在项目根目录找到 start_system.bat，双击运行
+
+# 方式 2：命令行运行
+start_system.bat
+```
+
+#### macOS / Linux
+
+```bash
+bash start_system.sh
+```
+
+### 脚本会自动完成
+
+✅ 检查 Python 3.9+ 和 Node.js 16+ 是否已安装  
+✅ 创建 Python 虚拟环境 (`backend/venv`)  
+✅ 安装 Python 依赖 (`pip install -r requirements.txt`)  
+✅ 安装 Node.js 依赖 (`npm install`)  
+✅ 启动后端服务 (FastAPI, 端口 19002)  
+✅ 启动前端服务 (Vite, 端口 19001)  
+
+### 访问应用
+
+启动完成后，打开浏览器访问：
+
+```
+http://localhost:19001
+```
+
+> 提示：如果脚本执行失败，请参考[详细安装步骤](#详细安装步骤)或[故障排查](#故障排查)
+
+---
+
+## 详细安装步骤
+
+> ⚠️ **注意**：如果已成功运行一键脚本，可以跳过本部分。
+
+### 步骤 1：克隆项目
+
+```bash
+git clone https://github.com/soundstarrain/LLM-Filter-Probe.git
+cd LLM-Filter-Probe
+```
+
+### 步骤 2：验证环境
+
+检查是否满足系统要求：
+
+```bash
+python --version    # 需要 3.9+
+node --version      # 需要 16.0+
+npm --version       # 需要 8.0+
+```
+
+如果版本不符，请先升级相应软件。
+
+### 步骤 3：创建虚拟环境
+
+```bash
+cd backend
+python -m venv venv
+```
+
+激活虚拟环境：
+
+```bash
+# Windows
+venv\Scripts\activate
+
+# macOS / Linux
+source venv/bin/activate
+```
+
+### 步骤 4：安装依赖
+
+```bash
+# 安装 Python 依赖
+pip install -r requirements.txt
+
+# 安装 Node.js 依赖
+cd ../frontend
+npm install
+```
+
+### 步骤 5：启动应用
+
+#### 方式 A：使用启动脚本（推荐）
+
+```bash
+# 返回项目根目录
+cd ..
+
+# Windows
+start_system.bat
+
+# macOS / Linux
+bash start_system.sh
+```
+
+#### 方式 B：手动启动
+
+打开两个终端窗口：
+
+**终端 1 - 启动后端**：
+```bash
+cd backend
+source venv/bin/activate  # macOS/Linux 或 venv\Scripts\activate (Windows)
+python -m uvicorn main:app --reload
+```
+
+**终端 2 - 启动前端**：
+```bash
+cd frontend
+npm run dev
+```
+
+### 步骤 6：验证应用
+
+打开浏览器访问：
+
+```
+http://localhost:19001
+```
+
+如果看到应用界面，说明安装成功！🎉
+
+---
+
+## 配置说明
+
+### 系统配置
+
+**文件位置**：`config/system.json`
+
+```json
+{
+  "host": "0.0.0.0",
+  "port": 19002,
+  "log_level": "INFO",
+  "cors_origins": ["http://localhost:19001", "http://localhost:3000"]
+}
+```
+
+**参数说明**：
+
+| 参数 | 说明 | 默认值 |
+|------|------|--------|
+| `host` | 后端服务监听地址 | 0.0.0.0 |
+| `port` | 后端服务端口 | 19002 |
+| `log_level` | 日志级别 (DEBUG/INFO/WARNING/ERROR) | INFO |
+| `cors_origins` | 允许的跨域来源 | 见上 |
+
+### API 凭证
+
+**文件位置**：`config/API/credentials.json`
+
+```json
+{
+  "api_url": "https://api.openai.com/v1",
+  "api_key": "sk-...",
+  "api_model": "gpt-4o-mini"
+}
+```
+
+> ⚠️ **安全提示**：不要将 API 密钥提交到版本控制系统，使用 `.gitignore` 排除此文件。
+
+### 高级设置
+
+**文件位置**：`config/settings/default.json`
+
+详细参数说明请参考 [PARAMETER_REFERENCE.md](./PARAMETER_REFERENCE.md)
+
+### 预设规则
+
+**文件位置**：`config/presets/{preset}.json`
+
+| 文件 | 说明 | 权限 |
+|------|------|------|
+| `official.json` | 官方 API 规则 | 只读 |
+| `relay.json` | 中转服务规则 | 只读 |
+| `custom.json` | 用户自定义规则 | 可写 |
+
+---
+
+## Docker 部署
+
+### 前置条件
+
+```bash
+docker --version         # 需要 20.10+
+docker-compose --version # 需要 1.29+
+```
+
+### 快速启动
+
+```bash
+# 启动所有服务
+docker-compose up -d
+
+# 查看日志
+docker-compose logs -f
+
+# 停止服务
+docker-compose down
+```
+
+### 访问应用
+
+```
+http://localhost:19001
+```
+
+### Docker Compose 配置
+
+**文件**：`docker-compose.yml`
+
+```yaml
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "19002:19002"
+    volumes:
+      - ./config:/app/config
+      - ./logs:/app/logs
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "19001:19001"
+    depends_on:
+      - backend
+```
+
+**常用命令**：
+
+```bash
+# 查看容器状态
+docker-compose ps
+
+# 查看特定服务日志
+docker-compose logs backend
+
+# 重启服务
+docker-compose restart
+
+# 删除容器和卷
+docker-compose down -v
+```
+
+---
+
+## 生产环境部署
+
+### 推荐架构
+
+```
+┌─────────────────────────────────────────┐
+│         Nginx (反向代理)                 │
+│  (端口 80/443，负载均衡)                 │
+└────────────────┬────────────────────────┘
+                 │
+        ┌────────┴────────┐
+        ↓                 ↓
+┌──────────────┐   ┌──────────────┐
+│ FastAPI 1    │   │ FastAPI 2    │
+│ (19002)      │   │ (19003)      │
+└──────────────┘   └──────────────┘
+        ↑                 ↑
+        └────────┬────────┘
+                 ↓
+        ┌──────────────────┐
+        │  PostgreSQL      │
+        │  (配置存储)      │
+        └──────────────────┘
+```
+
+### 步骤 1：安装 Gunicorn
+
+```bash
+pip install gunicorn
+```
+
+启动 Gunicorn：
+
+```bash
+gunicorn -w 4 -b 0.0.0.0:19002 backend.app:app
+```
+
+**参数说明**：
+- `-w 4` - 工作进程数（建议为 CPU 核心数 × 2 + 1）
+- `-b 0.0.0.0:19002` - 绑定地址和端口
+
+### 步骤 2：配置 Nginx
+
+**文件**：`nginx.conf`
+
+```nginx
+upstream backend {
+    server 127.0.0.1:19002;
+    server 127.0.0.1:19003;
+}
+
+server {
+    listen 80;
+    server_name your-domain.com;
+    return 301 https://$server_name$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name your-domain.com;
+
+    ssl_certificate /path/to/cert.pem;
+    ssl_certificate_key /path/to/key.pem;
+
+    # 前端
+    location / {
+        proxy_pass http://127.0.0.1:19001;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # 后端 API
+    location /api/ {
+        proxy_pass http://backend;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # WebSocket
+    location /ws/ {
+        proxy_pass http://backend;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+```
+
+### 步骤 3：进程管理（Supervisor）
+
+**文件**：`supervisord.conf`
+
+```ini
+[program:backend]
+command=gunicorn -w 4 -b 0.0.0.0:19002 backend.app:app
+directory=/path/to/project/backend
+autostart=true
+autorestart=true
+stderr_logfile=/var/log/backend.err.log
+stdout_logfile=/var/log/backend.out.log
+
+[program:frontend]
+command=npm run preview
+directory=/path/to/project/frontend
+autostart=true
+autorestart=true
+stderr_logfile=/var/log/frontend.err.log
+stdout_logfile=/var/log/frontend.out.log
+```
+
+启动 Supervisor：
+
+```bash
+supervisord -c supervisord.conf
+supervisorctl status
+```
+
+### 步骤 4：SSL 证书配置
+
+使用 Let's Encrypt 获取免费证书：
+
+```bash
+certbot certonly --standalone -d your-domain.com
+```
+
+证书位置：
+
+```
+/etc/letsencrypt/live/your-domain.com/fullchain.pem
+/etc/letsencrypt/live/your-domain.com/privkey.pem
+```
+
+自动续期：
+
+```bash
+certbot renew --dry-run
+```
+
+---
+
+## 监控和日志
+
+### 日志文件
+
+```
+logs/
+├── app.log          # 应用日志
+├── audit.log        # 审计日志
+└── venv_setup.log   # 虚拟环境设置日志
+```
+
+### 查看日志
+
+```bash
+# 实时查看日志
+tail -f logs/app.log
+
+# 查看最后 100 行
+tail -100 logs/app.log
+
+# 搜索错误日志
+grep ERROR logs/app.log
+
+# 搜索特定日期的日志
+grep "2025-12-07" logs/app.log
+```
+
+### 日志级别
+
+| 级别 | 说明 | 示例 |
+|------|------|------|
+| DEBUG | 调试信息 | 变量值、函数调用 |
+| INFO | 一般信息 | 应用启动、请求处理 |
+| WARNING | 警告信息 | 配置问题、性能警告 |
+| ERROR | 错误信息 | 异常、API 失败 |
+| CRITICAL | 严重错误 | 系统崩溃 |
+
+### 修改日志级别
+
+编辑 `config/system.json`：
+
+```json
+{
+  "log_level": "DEBUG"
+}
+```
+
+### 健康检查
+
+```bash
+# 检查后端健康状态
+curl http://localhost:19002/health
+
+# 检查前端可访问性
+curl http://localhost:19001
+```
+
+---
+
+## 故障排查
+
+### 问题 1：后端服务无法启动
+
+**症状**：
+```
+ERROR: Address already in use
+```
+
+**解决方案**：
+
+1. 查找占用端口的进程
+   ```bash
+   # macOS / Linux
+   lsof -i :19002
+   
+   # Windows
+   netstat -ano | findstr :19002
+   ```
+
+2. 杀死进程
+   ```bash
+   # macOS / Linux
+   kill -9 <PID>
+   
+   # Windows
+   taskkill /PID <PID> /F
+   ```
+
+3. 或改用其他端口
+   ```bash
+   python -m uvicorn main:app --port 19003
+   ```
+
+---
+
+### 问题 2：前端无法连接后端
+
+**症状**：
+```
+WebSocket connection failed
+API request timeout
+```
+
+**检查清单**：
+
+- [ ] 后端服务是否正在运行？
+  ```bash
+  curl http://localhost:19002/health
+  ```
+
+- [ ] 防火墙是否阻止了端口？
+  ```bash
+  # Windows
+  netsh advfirewall firewall add rule name="Allow 19002" dir=in action=allow protocol=tcp localport=19002
+  ```
+
+- [ ] CORS 配置是否正确？
+  ```json
+  {
+    "cors_origins": ["http://localhost:19001"]
+  }
+  ```
+
+---
+
+### 问题 3：API 凭证无效
+
+**症状**：
+```
+401 Unauthorized
+Invalid API key
+```
+
+**解决方案**：
+
+1. 检查 `config/API/credentials.json` 中的 API 密钥
+2. 确认 API 密钥未过期
+3. 测试 API 连接
+   ```bash
+   curl -H "Authorization: Bearer sk-..." https://api.openai.com/v1/models
+   ```
+
+---
+
+### 问题 4：扫描速度很慢
+
+**症状**：
+```
+扫描耗时超过预期
+```
+
+**优化方案**：
+
+1. 增加并发数
+   ```json
+   {
+     "concurrency": 30
+   }
+   ```
+
+2. 减少超时时间
+   ```json
+   {
+     "timeout_seconds": 15
+   }
+   ```
+
+3. 检查网络连接
+   ```bash
+   ping api.openai.com
+   ```
+
+---
+
+### 问题 5：内存占用过高
+
+**症状**：
+```
+内存使用率 > 80%
+```
+
+**优化方案**：
+
+1. 减少并发数
+   ```json
+   {
+     "concurrency": 10
+   }
+   ```
+
+2. 减少分块大小
+   ```json
+   {
+     "chunk_size": 10000
+   }
+   ```
+
+3. 重启应用
+   ```bash
+   docker-compose restart
+   ```
+
+---
+
+### 问题 6：一键脚本执行失败
+
+**常见原因和解决方案**：
+
+| 错误信息 | 原因 | 解决方案 |
+|---------|------|---------|
+| `Python not found` | Python 未安装或不在 PATH | 安装 Python 3.9+ |
+| `Node not found` | Node.js 未安装或不在 PATH | 安装 Node.js 16+ |
+| `Permission denied` | 脚本无执行权限 | `chmod +x start_system.sh` |
+| `pip install failed` | 网络问题或依赖冲突 | 检查网络，清除缓存后重试 |
+
+---
+
+## 常见问题速查表
+
+| 问题 | 快速解决 |
+|------|---------|
+| 如何重启应用？ | `docker-compose restart` 或重新运行脚本 |
+| 如何查看实时日志？ | `tail -f logs/app.log` |
+| 如何修改端口？ | 编辑 `config/system.json` 中的 `port` 字段 |
+| 如何清除缓存？ | `rm -rf backend/venv frontend/node_modules` |
+| 如何恢复默认配置？ | 删除 `config/` 目录，重新运行脚本 |
+| 生产环境推荐用什么？ | Docker Compose 或 Nginx + Gunicorn |
+
+

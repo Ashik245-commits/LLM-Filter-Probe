@@ -1,0 +1,14 @@
+[flake8]
+max-line-length = 119
+exclude = 
+    .git,
+    __pycache__,
+    venv,
+    .venv,
+    build,
+    dist
+ignore = 
+    E203, # Whitespace before ':' - conflicts with black
+    W503, # Line break before binary operator - conflicts with black
+    F401  # 'module' imported but unused - can be noisy during development
+
